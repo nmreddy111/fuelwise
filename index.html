@@ -736,10 +736,8 @@
       const addPopup = document.getElementById("addPopup");
 
       // Data structure for multiple vehicles
-      let vehicles = JSON.parse(localStorage.getItem("vehicles")) || [
-        { id: "default", name: "Vehicle 1" }
-      ];
-      let currentVehicleId = localStorage.getItem("currentVehicleId") || "default";
+      let vehicles = JSON.parse(localStorage.getItem("vehicles")) || [];
+      let currentVehicleId = localStorage.getItem("currentVehicleId") || null;
       
       // Migrate old data if needed
       const oldData = JSON.parse(localStorage.getItem("mileageData"));
@@ -750,11 +748,14 @@
       }
       
       // Initialize data structure if needed
-      if (!allData[currentVehicleId]) {
+      let data = [];
+      if (currentVehicleId && !allData[currentVehicleId]) {
         allData[currentVehicleId] = [];
       }
       
-      let data = allData[currentVehicleId];
+      if (currentVehicleId) {
+        data = allData[currentVehicleId];
+      }
 
       function formatDate(date) {
         return date
@@ -889,7 +890,6 @@
 
       function openAddPopup() {
         if (!currentVehicleId) {
-          alert("Please add a vehicle first.");
           addNewVehicle();
           return;
         }
@@ -1092,13 +1092,23 @@
         const currentVehicleText = document.getElementById("currentVehicleText");
         const currentVehicle = vehicles.find(v => v.id === currentVehicleId);
         
-        let displayName = "No Vehicle Selected";
+        let displayName = "Select Vehicle";
         
         if (currentVehicle) {
           displayName = currentVehicle.name;
         }
         
         currentVehicleText.textContent = displayName;
+        
+        // If no vehicle is selected, disable the add entry button
+        const addEntryBtn = document.getElementById("addEntryBtn");
+        if (!currentVehicleId) {
+          addEntryBtn.style.opacity = "0.5";
+          addEntryBtn.title = "Please add a vehicle first";
+        } else {
+          addEntryBtn.style.opacity = "1";
+          addEntryBtn.title = "Add new entry";
+        }
       }
       
       function addNewVehicle() {
@@ -1191,6 +1201,11 @@
       document.getElementById("vehicleMenuBtn").addEventListener("click", function(e) {
         e.stopPropagation();
         toggleVehicleDropdown();
+        
+        // If no vehicles exist, automatically open the add vehicle popup
+        if (vehicles.length === 0) {
+          addNewVehicle();
+        }
       });
       
       renderVehicleList();
