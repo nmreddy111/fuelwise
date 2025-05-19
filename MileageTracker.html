@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mileage Tracker</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #4361ee;
+        --secondary: #3f37c9;
+        --success: #4cc9f0;
+        --danger: #f72585;
+        --warning: #f8961e;
+        --info: #4895ef;
+        --light: #f8f9fa;
+        --dark: #212529;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f0f4f8;
+        padding: 0;
+        margin: 0;
+        color: var(--dark);
+      }
+      
+      .topnav {
+        background: white;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 100;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        height: 60px;
+        box-sizing: border-box;
+        justify-content: space-between;
+      }
+      
+      .app-title {
+        display: flex;
+        align-items: center;
+        color: var(--primary);
+        font-size: 18px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      
+      .app-title i {
+        margin-right: 10px;
+      }
+      
+      .vehicle-dropdown {
+        position: relative;
+        display: inline-block;
+      }
+      
+      .vehicle-menu-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 8px 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+      }
+      
+      .vehicle-dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: white;
+        min-width: 200px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        border-radius: 4px;
+        z-index: 101;
+        padding: 10px 15px 10px 10px;
+        max-height: 300px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 230px;
+        box-sizing: border-box;
+      }
+      
+      .vehicle-dropdown-content.show {
+        display: block;
+      }
+      
+      .main-content {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        height: 100vh;
+        margin-top: 60px;
+      }
+      h1 {
+        text-align: center;
+        color: var(--secondary);
+        margin-top: 10px;
+        font-weight: 600;
+        font-size: 1.5em;
+      }
+      .form-container,
+      .popup {
+        max-width: 500px;
+        margin: auto;
+        padding: 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+      label {
+        display: block;
+        margin-top: 12px;
+        font-weight: bold;
+      }
+      input {
+        width: 100%;
+        padding: 12px;
+        margin-top: 6px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 16px;
+        box-sizing: border-box;
+      }
+      input[readonly] {
+        background-color: #e0f0ff;
+      }
+      table {
+        width: 100%;
+        margin-top: 30px;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+      th,
+      td {
+        padding: 14px;
+        border: 1px solid #ddd;
+      }
+      th {
+        background-color: var(--primary);
+        color: white;
+        text-align: center;
+      }
+      td.number {
+        text-align: right;
+        font-family: "Courier New", monospace;
+      }
+      td.text {
+        text-align: left;
+      }
+      td.center {
+        text-align: center;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 10px;
+        }
+        h1 {
+          font-size: 20px;
+          margin-top: 20px;
+        }
+        table {
+          display: block;
+          overflow-x: auto;
+          white-space: nowrap;
+          font-size: 14px;
+        }
+        th,
+        td {
+          padding: 8px 6px;
+        }
+        .summary-card {
+          flex-wrap: wrap;
+          padding: 10px;
+        }
+        .summary-item {
+          width: 50%;
+          padding: 10px 5px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+        .summary-item:after {
+          display: none;
+        }
+        .summary-value {
+          font-size: 20px;
+        }
+        .summary-label {
+          font-size: 12px;
+        }
+        .fab-button {
+          width: 48px;
+          height: 48px;
+        }
+        #addEntryBtn {
+          bottom: 20px;
+          right: 20px;
+        }
+        #clearDataBtn {
+          bottom: 20px;
+          left: 20px;
+        }
+        .popup,
+        .add-popup {
+          width: 90%;
+          padding: 15px;
+        }
+        input {
+          font-size: 16px; /* Prevents zoom on iOS */
+        }
+        .form-group i {
+          top: 38px;
+        }
+        .topnav {
+          padding: 0 10px;
+          height: 50px;
+        }
+        .vehicle-menu-btn {
+          font-size: 14px;
+          padding: 6px 12px;
+        }
+        .vehicle-item {
+          padding: 6px 8px;
+          font-size: 13px;
+        }
+        .vehicle-actions {
+          gap: 0;
+        }
+        .main-content {
+          margin-top: 50px;
+        }
+        .vehicle-dropdown-content {
+          min-width: 180px;
+          max-width: 80vw;
+          width: 200px;
+          padding-right: 15px;
+        }
+        .app-title i {
+          margin-right: 8px;
+          font-size: 18px;
+        }
+        .app-title {
+          font-size: 16px;
+        }
+        .header-container {
+          margin-top: 10px;
+        }
+      }
+      .action-button {
+        background: var(--primary);
+        color: white;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .action-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .popup,
+      .add-popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        z-index: 1000;
+        padding: 20px;
+        box-sizing: border-box;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        width: 320px;
+        max-width: 90%;
+      }
+
+      .popup form,
+      .add-popup form {
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        z-index: 999;
+      }
+      .form-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      button {
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 10px;
+        flex: 1;
+        color: white;
+        transition: background-color 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .fab-button {
+        position: fixed;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        z-index: 1100;
+        color: white;
+        font-size: 24px;
+        transition: all 0.3s ease;
+      }
+
+      .fab-button:hover {
+        transform: scale(1.1);
+      }
+
+      #addEntryBtn {
+        bottom: 30px;
+        right: 30px;
+        background-color: var(--success);
+        position: fixed;
+        z-index: 1100;
+      }
+
+      .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: #666;
+      }
+      .add-popup button[type="submit"] {
+        background-color: var(--success);
+      }
+      .add-popup button[type="button"] {
+        background-color: var(--danger);
+      }
+      .popup button[type="submit"] {
+        background-color: var(--success);
+      }
+      .popup button[type="button"] {
+        background-color: var(--danger);
+      }
+      .summary-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .summary-item {
+        text-align: center;
+        padding: 10px 20px;
+        min-width: 120px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .summary-item:not(:last-child):after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 20%;
+        height: 60%;
+        width: 1px;
+        background-color: #e0e0e0;
+      }
+
+      .summary-icon {
+        font-size: 24px;
+        color: var(--primary);
+        margin-bottom: 10px;
+        width: 100%;
+        text-align: center;
+      }
+
+      .summary-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--primary);
+        margin: 5px 0;
+        width: 100%;
+        text-align: center;
+      }
+      .summary-label {
+        font-size: 14px;
+        color: #666;
+        width: 100%;
+        text-align: center;
+      }
+      tr.highlight {
+        background-color: #e6f7ff;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      
+
+      
+      .header-container {
+        text-align: center;
+      }
+      
+      #vehicleNameHeader {
+        color: var(--secondary);
+        font-weight: 500;
+      }
+      
+      .topnav h2 {
+        color: var(--primary);
+        font-size: 20px;
+        margin: 0;
+        margin-right: 20px;
+      }
+      
+      #vehicleList {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      
+      .vehicle-item {
+        padding: 8px 5px 8px 12px;
+        transition: background 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 5px;
+        border-radius: 4px;
+        font-size: 14px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      
+      .vehicle-item:hover {
+        background: #f0f4f8;
+      }
+      
+      .vehicle-item.active {
+        background: var(--primary);
+        color: white;
+      }
+      
+      .vehicle-name {
+        cursor: pointer;
+      }
+      
+      .vehicle-actions {
+        display: flex;
+        gap: 0;
+        padding-right: 5px;
+      }
+      
+      .vehicle-action {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px 3px;
+        font-size: 12px;
+        color: #666;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 24px;
+      }
+      
+      .vehicle-item.active .vehicle-action {
+        color: white;
+      }
+      
+      .vehicle-action:hover {
+        background: rgba(0, 0, 0, 0.1);
+      }
+      
+      .clear-data {
+        color: var(--warning);
+      }
+      
+      .delete-vehicle {
+        color: var(--danger);
+      }
+      
+      #addVehicleBtn {
+        background: var(--success);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 36px;
+        border-radius: 4px;
+        padding: 8px;
+        font-size: 14px;
+        margin-top: 5px;
+      }
+      
+      #addVehicleBtn span {
+        display: inline;
+      }
+
+      .popup h2,
+      .add-popup h2 {
+        color: var(--primary);
+        text-align: center;
+        margin-top: 0;
+      }
+
+      .form-group {
+        position: relative;
+        margin-bottom: 20px;
+      }
+
+      .form-group i {
+        position: absolute;
+        left: 12px;
+        top: 42px;
+        color: #666;
+      }
+
+      .form-group input {
+        padding-left: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topnav" id="topnav">
+      <div class="app-title">
+        <i class="fas fa-gas-pump"></i>
+        <span class="app-name">Mileage Tracker</span>
+      </div>
+      <div class="vehicle-dropdown">
+        <button id="vehicleMenuBtn" class="vehicle-menu-btn">
+          <i class="fas fa-car"></i> <span id="currentVehicleText">Select Vehicle</span> <i class="fas fa-chevron-down"></i>
+        </button>
+        <div id="vehicleDropdownContent" class="vehicle-dropdown-content">
+          <div id="vehicleList"></div>
+          <button id="addVehicleBtn" onclick="addNewVehicle()" title="Add Vehicle">
+            <i class="fas fa-plus"></i><span> Add Vehicle</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="main-content">
+      <div class="container">
+      <button id="addEntryBtn" class="fab-button" onclick="openAddPopup()">
+        <i class="fas fa-plus"></i>
+      </button>
+
+
+
+      <div class="summary-card" id="summaryCard">
+        <div class="summary-item">
+          <div class="summary-icon"><i class="fas fa-tachometer-alt"></i></div>
+          <div class="summary-value" id="lastMileage">-</div>
+          <div class="summary-label">Last Mileage (km/L)</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="summary-value" id="avgMileage">-</div>
+          <div class="summary-label">Avg Mileage (km/L)</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-icon"><i class="fas fa-road"></i></div>
+          <div class="summary-value" id="totalDistance">-</div>
+          <div class="summary-label">Total Distance (km)</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-icon"><i class="fas fa-oil-can"></i></div>
+          <div class="summary-value" id="totalFuel">-</div>
+          <div class="summary-label">Total Fuel (L)</div>
+        </div>
+      </div>
+
+      <div class="popup-overlay" id="popupOverlay"></div>
+      
+      <div class="popup" id="vehiclePopup">
+        <button class="close-btn" onclick="closeVehiclePopup()">&times;</button>
+        <h2><i class="fas fa-car"></i> Add Vehicle</h2>
+        <form id="vehicleForm">
+          <div class="form-group">
+            <label>Vehicle Name:</label>
+            <i class="fas fa-car"></i>
+            <input type="text" id="vehicleName" required />
+          </div>
+          <div class="form-actions">
+            <button type="submit"><i class="fas fa-save"></i> Save</button>
+            <button type="button" onclick="closeVehiclePopup()">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="popup add-popup" id="addPopup">
+        <button class="close-btn" onclick="closeAddPopup()">&times;</button>
+        <h2><i class="fas fa-plus-circle"></i> New Entry</h2>
+        <form id="mileageForm">
+          <div class="form-group">
+            <label>Odometer Reading (km):</label>
+            <i class="fas fa-tachometer-alt"></i>
+            <input type="number" id="odometer" required />
+          </div>
+          <div class="form-group">
+            <label>Fuel Price per Litre (Rs):</label>
+            <i class="fas fa-rupee-sign"></i>
+            <input type="number" step="0.01" id="price" required />
+          </div>
+          <div class="form-group">
+            <label>Total Paid (Rs):</label>
+            <i class="fas fa-money-bill-wave"></i>
+            <input type="number" step="0.01" id="amount" required />
+          </div>
+          <div class="form-actions">
+            <button type="submit"><i class="fas fa-save"></i> Save</button>
+            <button type="button" onclick="resetForm()">
+              <i class="fas fa-undo"></i> Reset
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="popup" id="editPopup">
+        <button class="close-btn" onclick="closeEditPopup()">&times;</button>
+        <h2><i class="fas fa-edit"></i> Edit Entry</h2>
+        <form id="editForm">
+          <div class="form-group">
+            <label>Odometer Reading (km):</label>
+            <i class="fas fa-tachometer-alt"></i>
+            <input type="number" id="editOdometer" required />
+          </div>
+          <div class="form-group">
+            <label>Fuel Price per Litre (Rs):</label>
+            <i class="fas fa-rupee-sign"></i>
+            <input type="number" step="0.01" id="editPrice" required />
+          </div>
+          <div class="form-group">
+            <label>Total Paid (Rs):</label>
+            <i class="fas fa-money-bill-wave"></i>
+            <input type="number" step="0.01" id="editAmount" required />
+          </div>
+          <div class="form-actions">
+            <button type="submit"><i class="fas fa-save"></i> Update</button>
+            <button type="button" onclick="closeEditPopup()">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="table-container">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th><i class="far fa-calendar-alt"></i> Date</th>
+              <th><i class="fas fa-route"></i> Distance (km)</th>
+              <th><i class="fas fa-tachometer-alt"></i> Mileage (km/L)</th>
+              <th><i class="fas fa-gas-pump"></i> Fuel (L)</th>
+              <th><i class="fas fa-rupee-sign"></i> Price (Rs/L)</th>
+              <th><i class="fas fa-money-bill-wave"></i> Total Paid (Rs)</th>
+              <th><i class="fas fa-car"></i> Odometer</th>
+              <th><i class="fas fa-calculator"></i> Trip Cost (Rs)</th>
+              <th><i class="fas fa-cog"></i> Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      const form = document.getElementById("mileageForm");
+      const editForm = document.getElementById("editForm");
+      const tableBody = document.querySelector("#dataTable tbody");
+      const editOdometer = document.getElementById("editOdometer");
+      const editPrice = document.getElementById("editPrice");
+      const editAmount = document.getElementById("editAmount");
+      const popupOverlay = document.getElementById("popupOverlay");
+      const editPopup = document.getElementById("editPopup");
+      const addPopup = document.getElementById("addPopup");
+
+      // Data structure for multiple vehicles
+      let vehicles = JSON.parse(localStorage.getItem("vehicles")) || [
+        { id: "default", name: "Vehicle 1" }
+      ];
+      let currentVehicleId = localStorage.getItem("currentVehicleId") || "default";
+      
+      // Migrate old data if needed
+      const oldData = JSON.parse(localStorage.getItem("mileageData"));
+      let allData = JSON.parse(localStorage.getItem("allMileageData")) || {};
+      
+      if (oldData && !allData.default) {
+        allData.default = oldData;
+      }
+      
+      // Initialize data structure if needed
+      if (!allData[currentVehicleId]) {
+        allData[currentVehicleId] = [];
+      }
+      
+      let data = allData[currentVehicleId];
+
+      function formatDate(date) {
+        return date
+          .toLocaleString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          })
+          .replace(",", "");
+      }
+
+      function formatNumber(value, decimals = 2) {
+        if (value === null || value === undefined || value === "-") return "-";
+        return parseFloat(value).toFixed(decimals);
+      }
+
+      function updateSummary() {
+        if (data.length === 0) {
+          // Reset summary values when there's no data
+          document.getElementById("lastMileage").textContent = "-";
+          document.getElementById("avgMileage").textContent = "-";
+          document.getElementById("totalDistance").textContent = "-";
+          document.getElementById("totalFuel").textContent = "-";
+          return;
+        }
+
+        const lastEntry = data[data.length - 1];
+        document.getElementById("lastMileage").textContent =
+          lastEntry.mileage || "-";
+
+        let totalDistance = 0;
+        let totalFuel = 0;
+        let validEntries = 0;
+
+        data.forEach((entry) => {
+          if (entry.distance) totalDistance += parseFloat(entry.distance);
+          if (entry.fuel) totalFuel += parseFloat(entry.fuel);
+          if (entry.mileage) validEntries++;
+        });
+
+        const avgMileage =
+          validEntries > 0 ? (totalDistance / totalFuel).toFixed(2) : "-";
+
+        document.getElementById("avgMileage").textContent = avgMileage;
+        document.getElementById("totalDistance").textContent = formatNumber(
+          totalDistance,
+          0
+        );
+        document.getElementById("totalFuel").textContent = formatNumber(
+          totalFuel,
+          2
+        );
+      }
+
+      function confirmClearData() {
+        if (
+          confirm(
+            "Are you sure you want to clear data for this vehicle? This action cannot be undone."
+          )
+        ) {
+          allData[currentVehicleId] = [];
+          data = [];
+          localStorage.setItem("allMileageData", JSON.stringify(allData));
+          updateTable();
+          alert("Vehicle data has been cleared.");
+        }
+      }
+
+      function updateTable() {
+        tableBody.innerHTML = "";
+
+        if (!currentVehicleId) {
+          const emptyRow = document.createElement("tr");
+          emptyRow.innerHTML = `<td colspan="9" style="text-align: center; padding: 20px;">No vehicle selected. Add a vehicle first.</td>`;
+          tableBody.appendChild(emptyRow);
+          return;
+        }
+        
+        if (data.length === 0) {
+          const emptyRow = document.createElement("tr");
+          emptyRow.innerHTML = `<td colspan="9" style="text-align: center; padding: 20px;">No entries yet. Click the + button to add your first entry.</td>`;
+          tableBody.appendChild(emptyRow);
+          return;
+        }
+
+        // Add custom styles for the table
+        const style = document.createElement("style");
+        style.textContent = `
+          td.number { 
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif; 
+            font-weight: 500;
+          }
+          td.text { 
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+          }
+        `;
+        document.head.appendChild(style);
+
+        // Show newest entries on top by reversing data
+        [...data].reverse().forEach((entry, index) => {
+          const realIndex = data.length - 1 - index;
+          const row = document.createElement("tr");
+          if (index === 0) row.classList.add("highlight");
+
+          row.innerHTML = `
+          <td class="text">${entry.date}</td>
+          <td class="number">${entry.distance || "-"}</td>
+          <td class="number">${entry.mileage || "-"}</td>
+          <td class="number">${entry.fuel}</td>
+          <td class="number">${entry.price}</td>
+          <td class="number">${entry.amount}</td>
+          <td class="number">${entry.odometer}</td>
+          <td class="number">${entry.tripCost || "-"}</td>
+          <td class="center">${
+            realIndex === data.length - 1
+              ? '<button class="action-button" onclick="editLastEntry()"><i class="fas fa-edit"></i></button>'
+              : ""
+          }</td>
+        `;
+          tableBody.appendChild(row);
+        });
+
+        updateSummary();
+      }
+
+      function resetForm() {
+        form.reset();
+      }
+
+      function openAddPopup() {
+        if (!currentVehicleId) {
+          alert("Please add a vehicle first.");
+          addNewVehicle();
+          return;
+        }
+        
+        // Show previous odometer value and auto-populate first 2 digits
+        const odometerField = document.getElementById("odometer");
+        odometerField.value = ""; // Clear the field first
+
+        if (data.length > 0) {
+          const lastEntry = data[data.length - 1];
+          const hint = document.createElement("div");
+          hint.style.fontSize = "12px";
+          hint.style.color = "#666";
+          hint.style.marginTop = "5px";
+          hint.textContent = `Previous reading: ${lastEntry.odometer}`;
+
+          // Remove any existing hint
+          const existingHint = odometerField.parentNode.querySelector("div");
+          if (existingHint) existingHint.remove();
+
+          // Add the hint after the input field
+          odometerField.parentNode.appendChild(hint);
+
+          // Auto-populate first 2 digits of the odometer
+          const lastOdoStr = lastEntry.odometer.toString();
+          if (lastOdoStr.length >= 2) {
+            const firstTwoDigits = lastOdoStr.substring(0, 2);
+            odometerField.value = firstTwoDigits;
+          }
+        }
+
+        popupOverlay.style.display = "block";
+        addPopup.style.display = "block";
+      }
+
+      function closeAddPopup() {
+        popupOverlay.style.display = "none";
+        addPopup.style.display = "none";
+      }
+
+      function calculateTripCost(distance, mileage, price) {
+        if (mileage && price > 0) {
+          return parseInt(Math.round((distance / mileage) * price));
+        }
+        return null;
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const odometer = parseFloat(document.getElementById("odometer").value);
+        const price = parseFloat(document.getElementById("price").value);
+        const amount = parseFloat(document.getElementById("amount").value);
+        const fuel = amount / price;
+
+        const lastEntry = data[data.length - 1];
+        if (lastEntry && odometer <= lastEntry.odometer) {
+          alert("Odometer reading must be greater than the previous entry.");
+          return;
+        }
+
+        const distance = lastEntry ? odometer - lastEntry.odometer : null;
+        const mileage =
+          distance && fuel > 0 ? (distance / fuel).toFixed(2) : null;
+        const tripCost = calculateTripCost(distance, mileage, price);
+
+        const entry = {
+          date: formatDate(new Date()),
+          odometer,
+          fuel: fuel.toFixed(2),
+          price,
+          amount: amount.toFixed(2),
+          distance: distance || null,
+          mileage: mileage || null,
+          tripCost: tripCost || null,
+        };
+
+        data.push(entry);
+        allData[currentVehicleId] = data;
+        localStorage.setItem("allMileageData", JSON.stringify(allData));
+        updateTable();
+        resetForm();
+        closeAddPopup();
+      });
+
+      function editLastEntry() {
+        const last = data[data.length - 1];
+        editOdometer.value = last.odometer;
+        editPrice.value = last.price;
+        editAmount.value = last.amount;
+        popupOverlay.style.display = "block";
+        editPopup.style.display = "block";
+      }
+
+      function closeEditPopup() {
+        popupOverlay.style.display = "none";
+        editPopup.style.display = "none";
+      }
+
+      editForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const odometer = parseFloat(editOdometer.value);
+        const price = parseFloat(editPrice.value);
+        const amount = parseFloat(editAmount.value);
+        const fuel = amount / price;
+
+        const previousEntry = data.length > 1 ? data[data.length - 2] : null;
+        if (previousEntry && odometer <= previousEntry.odometer) {
+          alert("Odometer reading must be greater than the previous entry.");
+          return;
+        }
+
+        const distance = previousEntry
+          ? odometer - previousEntry.odometer
+          : null;
+        const mileage =
+          distance && fuel > 0 ? (distance / fuel).toFixed(2) : null;
+        const tripCost = calculateTripCost(distance, mileage, price);
+
+        data[data.length - 1] = {
+          date: formatDate(new Date()),
+          odometer,
+          fuel: fuel.toFixed(2),
+          price,
+          amount: amount.toFixed(2),
+          distance: distance || null,
+          mileage: mileage || null,
+          tripCost: tripCost || null,
+        };
+
+        allData[currentVehicleId] = data;
+        localStorage.setItem("allMileageData", JSON.stringify(allData));
+        closeEditPopup();
+        updateTable();
+      });
+
+      popupOverlay.addEventListener("click", () => {
+        closeAddPopup();
+        closeEditPopup();
+        closeVehiclePopup();
+      });
+
+      // Vehicle management functions
+      function renderVehicleList() {
+        const vehicleList = document.getElementById("vehicleList");
+        vehicleList.innerHTML = "";
+        
+        vehicles.forEach(vehicle => {
+          const item = document.createElement("div");
+          item.className = "vehicle-item" + (vehicle.id === currentVehicleId ? " active" : "");
+          
+          item.innerHTML = `
+            <span class="vehicle-name">${vehicle.name}</span>
+            <div class="vehicle-actions">
+              <button class="vehicle-action clear-data" title="Clear Data" data-id="${vehicle.id}">
+                <i class="fas fa-eraser"></i>
+              </button>
+              <button class="vehicle-action delete-vehicle" title="Delete Vehicle" data-id="${vehicle.id}">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          `;
+          
+          item.querySelector(".vehicle-name").addEventListener("click", () => {
+            switchVehicle(vehicle.id);
+            toggleVehicleDropdown();
+          });
+          
+          item.querySelector(".clear-data").addEventListener("click", (e) => {
+            e.stopPropagation();
+            clearVehicleData(vehicle.id);
+          });
+          
+          item.querySelector(".delete-vehicle").addEventListener("click", (e) => {
+            e.stopPropagation();
+            deleteVehicle(vehicle.id);
+          });
+          
+          vehicleList.appendChild(item);
+        });
+        
+        // Update vehicle name display
+        updateVehicleNameDisplay();
+      }
+      
+      function switchVehicle(vehicleId) {
+        currentVehicleId = vehicleId;
+        localStorage.setItem("currentVehicleId", vehicleId);
+        
+        if (!allData[vehicleId]) {
+          allData[vehicleId] = [];
+        }
+        
+        data = allData[vehicleId];
+        updateTable();
+        renderVehicleList();
+        updateVehicleNameDisplay();
+      }
+      
+      function updateVehicleNameDisplay() {
+        const currentVehicleText = document.getElementById("currentVehicleText");
+        const currentVehicle = vehicles.find(v => v.id === currentVehicleId);
+        
+        let displayName = "No Vehicle Selected";
+        
+        if (currentVehicle) {
+          displayName = currentVehicle.name;
+        }
+        
+        currentVehicleText.textContent = displayName;
+      }
+      
+      function addNewVehicle() {
+        document.getElementById("vehiclePopup").style.display = "block";
+        popupOverlay.style.display = "block";
+      }
+      
+      function closeVehiclePopup() {
+        document.getElementById("vehiclePopup").style.display = "none";
+        popupOverlay.style.display = "none";
+        document.getElementById("vehicleForm").reset();
+      }
+      
+      function deleteVehicle(vehicleId) {
+        if (confirm("Are you sure you want to delete this vehicle and all its data?")) {
+          vehicles = vehicles.filter(v => v.id !== vehicleId);
+          delete allData[vehicleId];
+          
+          localStorage.setItem("vehicles", JSON.stringify(vehicles));
+          localStorage.setItem("allMileageData", JSON.stringify(allData));
+          
+          if (currentVehicleId === vehicleId) {
+            if (vehicles.length > 0) {
+              switchVehicle(vehicles[0].id);
+            } else {
+              // No vehicles left, create empty state
+              currentVehicleId = null;
+              data = [];
+              updateTable();
+              updateVehicleNameDisplay();
+              renderVehicleList();
+            }
+          } else {
+            renderVehicleList();
+          }
+        }
+      }
+      
+      function clearVehicleData(vehicleId) {
+        const vehicle = vehicles.find(v => v.id === vehicleId);
+        if (confirm(`Are you sure you want to clear all data for "${vehicle.name}"? This action cannot be undone.`)) {
+          allData[vehicleId] = [];
+          
+          if (vehicleId === currentVehicleId) {
+            data = [];
+            updateTable();
+          }
+          
+          localStorage.setItem("allMileageData", JSON.stringify(allData));
+          alert(`Data for "${vehicle.name}" has been cleared.`);
+        }
+      }
+      
+      document.getElementById("vehicleForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        const vehicleName = document.getElementById("vehicleName").value.trim();
+        
+        if (!vehicleName) {
+          alert("Please enter a vehicle name");
+          return;
+        }
+        
+        const vehicleId = "v_" + Date.now();
+        vehicles.push({ id: vehicleId, name: vehicleName });
+        
+        localStorage.setItem("vehicles", JSON.stringify(vehicles));
+        closeVehiclePopup();
+        switchVehicle(vehicleId);
+      });
+      
+      // Toggle vehicle dropdown
+      function toggleVehicleDropdown() {
+        const dropdown = document.getElementById("vehicleDropdownContent");
+        dropdown.classList.toggle("show");
+      }
+      
+      // Close dropdown when clicking outside
+      window.addEventListener("click", function(event) {
+        if (!event.target.matches(".vehicle-menu-btn") && 
+            !event.target.closest(".vehicle-menu-btn") && 
+            !event.target.closest(".vehicle-dropdown-content")) {
+          const dropdown = document.getElementById("vehicleDropdownContent");
+          if (dropdown.classList.contains("show")) {
+            dropdown.classList.remove("show");
+          }
+        }
+      });
+      
+      // Add click event to dropdown button
+      document.getElementById("vehicleMenuBtn").addEventListener("click", function(e) {
+        e.stopPropagation();
+        toggleVehicleDropdown();
+      });
+      
+      renderVehicleList();
+      updateVehicleNameDisplay();
+      updateTable();
+    </script>
+  </body>
+</html>
