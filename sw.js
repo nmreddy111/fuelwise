@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mileage-tracker-v1';
+const CACHE_NAME = 'fuelwise-v1';
 const urlsToCache = [
   'index.html',
   'manifest.json',
