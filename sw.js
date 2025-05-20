@@ -2,8 +2,6 @@ const CACHE_NAME = 'mileage-tracker-v1';
 const urlsToCache = [
   'index.html',
   'manifest.json',
-  'icon-192.png',
-  'icon-512.png',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js'
