@@ -1,6 +1,6 @@
 {
-  "name": "Mileage Tracker",
-  "short_name": "Mileage",
+  "name": "FuelWise",
+  "short_name": "FuelWise",
   "description": "Track your vehicle's fuel mileage and expenses",
   "start_url": "index.html",
   "display": "standalone",
